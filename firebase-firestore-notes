@@ -1,0 +1,69 @@
+-To initialize the db
+const db = firebase.firestore();
+
+
+-To clear warnings
+db.settings({ timestampsInSnapshots: true });
+
+
+-To get document all datas from firestore collection
+db.collection('cafes').get().then((snapshot) => {
+    snapshot.docs.forEach(doc => {
+        console.log(doc.data());
+    });
+})
+
+
+-To get document particular/ filtered data from firestore collection
+db.collection('cafes').where('city', '==', 'Kathmandu').get().then((snapshot) => {
+    snapshot.docs.forEach(doc => {
+        renderCafe(doc);
+    });
+})
+
+
+-To get document particular/ filtered data in order from firestore collection
+db.collection('cafes').where('city', '==', 'Kathmandu').orderBy('name').get().then((snapshot) => {
+    snapshot.docs.forEach(doc => {
+        renderCafe(doc);
+    });
+})
+
+
+-To get specific document in a collection
+db.collection("cafes").doc(id);
+
+
+-To refresh real time data
+db.collection("cafes")
+  .orderBy("city")
+  .onSnapshot((snapshot) => {
+    let changes = snapshot.docChanges();
+    changes.forEach((change) => {
+      console.log(change.doc.data());
+      if (change.type == "added") {
+        renderCafe(change.doc);
+      } else if (change.type == "removed") {
+        let li = cafeList.querySelector("[data-id=" + change.doc.id + "]");
+        cafeList.removeChild(li);
+      }
+    });
+  });
+
+
+-To store/add data in firestore collection
+db.collection('cafes').add({
+    name: form.name.value,
+    city: form.city.value,
+});
+
+
+-To delete a document
+db.collection("cafes").doc(id).delete();
+
+
+-To update document data
+db.collection('cafes')..doc(id).update({
+    name: "Niraj",
+    city: "Kathmandu",
+});
